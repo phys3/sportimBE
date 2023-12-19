@@ -8,6 +8,11 @@ CREATE TABLE users (
   date_updated TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE event_types (
+  id         SERIAL PRIMARY KEY,
+  type_name  VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE events (
   id            UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
   event_type    SMALLINT REFERENCES event_types(id),
@@ -25,9 +30,4 @@ CREATE TABLE attendees (
   user_id      UUID REFERENCES users(id),
   rsvp_status  SMALLINT NOT NULL,
   PRIMARY KEY (event_id, user_id)
-);
-
-CREATE TABLE event_types (
-  id         SERIAL PRIMARY KEY,
-  type_name  VARCHAR(50) NOT NULL
 );
