@@ -1,4 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "postgis";
 
 CREATE TABLE users (
   id        UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -18,12 +19,16 @@ CREATE TABLE events (
   event_type    SMALLINT REFERENCES event_types(id),
   age_group     VARCHAR(50),
   skill_level   SMALLINT,
-  event_location POINT NOT NULL,
+  event_location GEOGRAPHY(POINT, 4326) NOT NULL,
   date_time     TIMESTAMP NOT NULL,
   host_user_uid UUID REFERENCES users(id),
   date_created  TIMESTAMP DEFAULT NOW(),
   date_updated  TIMESTAMP DEFAULT NOW()
 );
+
+CREATE INDEX events_location_gist
+ON events
+USING gist (event_location);
 
 CREATE TABLE attendees (
   event_id     UUID REFERENCES events(id),
