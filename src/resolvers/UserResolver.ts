@@ -14,7 +14,7 @@ interface UpdateUserArgs extends Partial<CreateUserArgs> {
   
 export const UserResolver = {
   Query: {
-    user: async (_: void, { id }: UserArgs) => {
+    user: async ({ id }: UserArgs) => {
       const [user] = await db('users').where('id', id).select('*');
       return user;
     },
@@ -24,13 +24,13 @@ export const UserResolver = {
     },
   },
   Mutation: {
-    createUser: async (_: void, { username, email }: CreateUserArgs) => {
+    createUser: async ({ username, email }: CreateUserArgs) => {
       const [newUser] = await db('users')
         .insert({ username, email })
         .returning('*');
       return newUser;
     },
-    updateUser: async (_: void, { id, username, email }: UpdateUserArgs) => {
+    updateUser: async ({ id, username, email }: UpdateUserArgs) => {
       const [updatedUser] = await db('users')
         .where('id', id)
         .update({ username, email })

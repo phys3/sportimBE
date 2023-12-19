@@ -15,7 +15,7 @@ interface UpdateEventArgs extends Partial<CreateEventArgs> {
 
 export const EventResolver = {
   Query: {
-    event: async (_: void, { id }: EventArgs) => {
+    event: async ({ id }: EventArgs) => {
       const [event] = await db('events').where('id', id).select('*');
       return event;
     },
@@ -25,13 +25,13 @@ export const EventResolver = {
     },
   },
   Mutation: {
-    createEvent: async (_: void, { event_name, event_type }: CreateEventArgs) => {
+    createEvent: async ({ event_name, event_type }: CreateEventArgs) => {
       const [newEvent] = await db('events')
         .insert({ event_name, event_type })
         .returning('*');
       return newEvent;
     },
-    updateEvent: async (_: void, { id, event_name, event_type }: UpdateEventArgs) => {
+    updateEvent: async ({ id, event_name, event_type }: UpdateEventArgs) => {
       const [updatedEvent] = await db('events')
         .where('id', id)
         .update({ event_name, event_type })

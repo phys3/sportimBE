@@ -7,20 +7,19 @@ import { EventResolver } from './src/resolvers/EventResolver';
 import { AttendeeResolver } from './src/resolvers/AttendeeResolver';
 import schema from './src/graphql';
 
+
+
+
 const root = {
-    Query: {
-        ...UserResolver.Query,
-        ...EventResolver.Query,
-        ...AttendeeResolver.Query,
-      },
-      Mutation: {
-        ...UserResolver.Mutation,
-        ...EventResolver.Mutation,
-        ...AttendeeResolver.Mutation,
-      },
+      ...UserResolver.Query,
+      ...EventResolver.Query,
+      ...AttendeeResolver.Query,
+      ...UserResolver.Mutation,
+      ...EventResolver.Mutation,
+      ...AttendeeResolver.Mutation,
 };
 
-const app = express()
+var app = express()
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -30,4 +29,4 @@ app.use(
   })
 )
 app.listen(process.env.PORT)
-console.log("Running a GraphQL API server at http://localhost:3000/graphql")
+console.log(`Running a GraphQL API server at http://localhost:${process.env.PORT}/graphql`)

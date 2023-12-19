@@ -20,19 +20,19 @@ export const AttendeeResolver = {
       const attendees = await db('attendees').select('*');
       return attendees;
     },
-    eventAttendees: async (_: void, { id }: AttendeeArgs) => {
+    eventAttendees: async ({ id }: AttendeeArgs) => {
       const attendees = await db('attendees').where('event_id', id).select('*');
       return attendees;
     },
   },
   Mutation: {
-    createAttendee: async (_: void, { user_id, event_id, rsvp_status }: CreateAttendeeArgs) => {
+    createAttendee: async ({ user_id, event_id, rsvp_status }: CreateAttendeeArgs) => {
       const [newAttendee] = await db('attendees')
         .insert({ event_id, user_id, rsvp_status })
         .returning('*');
       return newAttendee;
     },
-    deleteAttendee: async (_: void, { id }: DeleteAttendeeArgs) => {
+    deleteAttendee: async ({ id }: DeleteAttendeeArgs) => {
       const deletedRows = await db('attendees').where('id', id).del();
       return deletedRows > 0;
     },

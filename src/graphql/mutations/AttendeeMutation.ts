@@ -1,4 +1,4 @@
 export const AttendeeMutation = `
-    createAttendee(id: ID!, id: ID!): Attendee!
+    createAttendee(user_id: ID!, event_id: ID!, rsvp_status: Int!): Attendee!
     deleteAttendee(attendid: ID!): Boolean!
 `;
