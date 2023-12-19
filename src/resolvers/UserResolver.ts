@@ -8,7 +8,7 @@ interface CreateUserArgs {
     username: string;
     email: string;
 }
-interface UpdateUserArgs extends CreateUserArgs {
+interface UpdateUserArgs extends Partial<CreateUserArgs> {
     id: string;
   }
   

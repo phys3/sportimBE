@@ -8,7 +8,6 @@ interface CreateAttendeeArgs {
   user_id: string;
   event_id: string;
   rsvp_status: string;
-  comments: string;
 }
 
 interface DeleteAttendeeArgs {
@@ -27,9 +26,9 @@ export const AttendeeResolver = {
     },
   },
   Mutation: {
-    createAttendee: async (_: void, { user_id, event_id, rsvp_status, comments }: CreateAttendeeArgs) => {
+    createAttendee: async (_: void, { user_id, event_id, rsvp_status }: CreateAttendeeArgs) => {
       const [newAttendee] = await db('attendees')
-        .insert({ event_id, user_id, rsvp_status, comments })
+        .insert({ event_id, user_id, rsvp_status })
         .returning('*');
       return newAttendee;
     },

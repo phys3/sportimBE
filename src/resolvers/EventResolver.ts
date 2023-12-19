@@ -9,7 +9,7 @@ interface CreateEventArgs {
   event_type: string;
 }
 
-interface UpdateEventArgs extends CreateEventArgs {
+interface UpdateEventArgs extends Partial<CreateEventArgs> {
   id: string;
 }
 
