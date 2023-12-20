@@ -1,5 +1,9 @@
 export const EventType = `
-    type Point {
+    input EventLocationInput {
+        lat: Float!
+        lng: Float!
+    }
+    type EventLocationOutput {
         lat: Float!
         lng: Float!
     }
@@ -8,7 +12,7 @@ export const EventType = `
         event_type: Int!
         age_group: String
         skill_level: Int
-        event_location: Point!
+        event_location: EventLocationOutput!
         date_time: String!
         host_user_uid: ID!
         date_created: String!
