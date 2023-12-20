@@ -6,14 +6,17 @@ import { UserResolver } from './src/resolvers/UserResolver.js';
 import { EventResolver } from './src/resolvers/EventResolver.js';
 import { AttendeeResolver } from './src/resolvers/AttendeeResolver.js';
 import schema from './src/graphql/index.js';
-
 const root = {
-  ...UserResolver.Query,
-  ...EventResolver.Query,
-  ...AttendeeResolver.Query,
-  ...UserResolver.Mutation,
-  ...EventResolver.Mutation,
-  ...AttendeeResolver.Mutation,
+  Query: {
+    ...UserResolver.Query,
+    ...EventResolver.Query,
+    ...AttendeeResolver.Query,
+  },
+  Mutation: {
+    ...UserResolver.Mutation,
+    ...EventResolver.Mutation,
+    ...AttendeeResolver.Mutation,
+  },
 };
 const server = new ApolloServer({
   typeDefs: schema,
@@ -21,7 +24,7 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-  listen: { port: 3000 },
+  listen: { port: Number(process.env.PORT) },
 });
 
 console.log(`Server ready at: ${url}`);
