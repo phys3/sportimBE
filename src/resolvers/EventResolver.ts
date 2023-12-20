@@ -1,4 +1,4 @@
-import db from '../db/connect';
+import db from '../db/connect.js';
 
 interface EventArgs {
   id: string;
@@ -18,7 +18,7 @@ interface UpdateEventArgs extends Partial<CreateEventArgs> {
 
 export const EventResolver = {
   Query: {
-    event: async ({ id }: EventArgs) => {
+    event: async (_parent: any, { id }: EventArgs) => {
       const [event] = await db('events').where('id', id).select('*');
       return event;
     },
@@ -39,7 +39,7 @@ export const EventResolver = {
     },
   },
   Mutation: {
-    createEvent: async (args: CreateEventArgs) => {
+    createEvent: async (_parent: any, args: CreateEventArgs) => {
       const { event_location, ...rest } = args;
       const [newEvent] = await db('events')
         .insert({
@@ -64,7 +64,10 @@ export const EventResolver = {
         },
       };
     },
-    updateEvent: async ({ id, event_location, ...rest }: UpdateEventArgs) => {
+    updateEvent: async (
+      _parent: any,
+      { id, event_location, ...rest }: UpdateEventArgs,
+    ) => {
       const [updatedEvent] = await db('events')
         .where('id', id)
         .update({

@@ -1,31 +1,30 @@
-import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
 import dotenv from 'dotenv';
 dotenv.config();
-import { graphqlHTTP } from 'express-graphql';
-import { UserResolver } from './src/resolvers/UserResolver';
-import { EventResolver } from './src/resolvers/EventResolver';
-import { AttendeeResolver } from './src/resolvers/AttendeeResolver';
-import schema from './src/graphql';
-
+import { UserResolver } from './src/resolvers/UserResolver.js';
+import { EventResolver } from './src/resolvers/EventResolver.js';
+import { AttendeeResolver } from './src/resolvers/AttendeeResolver.js';
+import schema from './src/graphql/index.js';
 const root = {
-  ...UserResolver.Query,
-  ...EventResolver.Query,
-  ...AttendeeResolver.Query,
-  ...UserResolver.Mutation,
-  ...EventResolver.Mutation,
-  ...AttendeeResolver.Mutation,
+  Query: {
+    ...UserResolver.Query,
+    ...EventResolver.Query,
+    ...AttendeeResolver.Query,
+  },
+  Mutation: {
+    ...UserResolver.Mutation,
+    ...EventResolver.Mutation,
+    ...AttendeeResolver.Mutation,
+  },
 };
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers: root,
+});
 
-var app = express();
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true,
-  }),
-);
-app.listen(process.env.PORT);
-console.log(
-  `Running a GraphQL API server at http://localhost:${process.env.PORT}/graphql`,
-);
+const { url } = await startStandaloneServer(server, {
+  listen: { port: Number(process.env.PORT) },
+});
+
+console.log(`Server ready at: ${url}`);

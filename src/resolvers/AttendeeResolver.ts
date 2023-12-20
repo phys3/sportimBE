@@ -1,4 +1,4 @@
-import db from '../db/connect';
+import db from '../db/connect.js';
 
 interface AttendeeArgs {
   id: string;
@@ -16,27 +16,26 @@ interface DeleteAttendeeArgs {
 
 export const AttendeeResolver = {
   Query: {
-    attendees: async () => {
-      const attendees = await db('attendees').select('*');
-      return attendees;
-    },
-    eventAttendees: async ({ id }: AttendeeArgs) => {
-      const attendees = await db('attendees').where('event_id', id).select('*');
+    eventAttendees: async (_parent: any, { id }: AttendeeArgs) => {
+      console.log('id', id);
+      const attendees = await db('attendees')
+        .join('users', 'users.id', 'attendees.user_id')
+        .where('attendees.event_id', id)
+        .select('users.*');
       return attendees;
     },
   },
   Mutation: {
-    createAttendee: async ({
-      user_id,
-      event_id,
-      rsvp_status,
-    }: CreateAttendeeArgs) => {
+    createAttendee: async (
+      _parent: any,
+      { user_id, event_id, rsvp_status }: CreateAttendeeArgs,
+    ) => {
       const [newAttendee] = await db('attendees')
         .insert({ event_id, user_id, rsvp_status })
         .returning('*');
       return newAttendee;
     },
-    deleteAttendee: async ({ id }: DeleteAttendeeArgs) => {
+    deleteAttendee: async (_parent: any, { id }: DeleteAttendeeArgs) => {
       const deletedRows = await db('attendees').where('id', id).del();
       return deletedRows > 0;
     },
