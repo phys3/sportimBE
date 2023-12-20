@@ -41,8 +41,15 @@ export const EventResolver = {
             ...rest,
             event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [event_location.lng, event_location.lat])
           })
-          .returning('*');
-        return newEvent;
+          .returning(['*', db.raw('ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude')]);
+
+        return {
+          ...newEvent,
+          event_location: {
+            lat: newEvent.latitude,
+            lng: newEvent.longitude
+          }
+        };
       },
       updateEvent: async ({ id, event_location, ...rest }: UpdateEventArgs) => {
         const [updatedEvent] = await db('events')
@@ -51,8 +58,14 @@ export const EventResolver = {
             event_location: event_location
               ? db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [event_location.lng, event_location.lat])
               : undefined})
-          .returning('*');
-        return updatedEvent;
+          .returning(['*', db.raw('ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude')]);
+        return {
+          ...updatedEvent,
+          event_location: {
+            lat: updatedEvent.latitude,
+            lng: updatedEvent.longitude
+          }
+        };
       },
   },
 };
