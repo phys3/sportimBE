@@ -24,13 +24,6 @@ export const EventResolver = {
     },
     events: async () => {
       const events = await db('events').select('*', db.raw('ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude'));
-      console.log(events.map(event => ({
-        ...event,
-        event_location: {
-          lat: event.latitude,
-          lng: event.longitude
-        }
-      })));
       return events.map(event => ({
         ...event,
         event_location: {
