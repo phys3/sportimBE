@@ -26,7 +26,11 @@ export const AttendeeResolver = {
     },
   },
   Mutation: {
-    createAttendee: async ({ user_id, event_id, rsvp_status }: CreateAttendeeArgs) => {
+    createAttendee: async ({
+      user_id,
+      event_id,
+      rsvp_status,
+    }: CreateAttendeeArgs) => {
       const [newAttendee] = await db('attendees')
         .insert({ event_id, user_id, rsvp_status })
         .returning('*');

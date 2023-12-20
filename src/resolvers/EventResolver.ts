@@ -4,17 +4,17 @@ interface EventArgs {
   id: string;
 }
 interface CreateEventArgs {
-    event_type: number;
-    age_group: string;
-    skill_level: number;
-    event_location: { lat: number, lng: number };
-    date_time: string;
-    host_user_uid: string;
-  }
-  
-  interface UpdateEventArgs extends Partial<CreateEventArgs> {
-    id: string;
-  }
+  event_type: number;
+  age_group: string;
+  skill_level: number;
+  event_location: { lat: number; lng: number };
+  date_time: string;
+  host_user_uid: string;
+}
+
+interface UpdateEventArgs extends Partial<CreateEventArgs> {
+  id: string;
+}
 
 export const EventResolver = {
   Query: {
@@ -23,49 +23,72 @@ export const EventResolver = {
       return event;
     },
     events: async () => {
-      const events = await db('events').select('*', db.raw('ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude'));
+      const events = await db('events').select(
+        '*',
+        db.raw(
+          'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+        ),
+      );
       return events.map(event => ({
         ...event,
         event_location: {
           lat: event.latitude,
-          lng: event.longitude
-        }
+          lng: event.longitude,
+        },
       }));
     },
   },
   Mutation: {
     createEvent: async (args: CreateEventArgs) => {
-        const { event_location, ...rest } = args;
-        const [newEvent] = await db('events')
-          .insert({
-            ...rest,
-            event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [event_location.lng, event_location.lat])
-          })
-          .returning(['*', db.raw('ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude')]);
+      const { event_location, ...rest } = args;
+      const [newEvent] = await db('events')
+        .insert({
+          ...rest,
+          event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
+            event_location.lng,
+            event_location.lat,
+          ]),
+        })
+        .returning([
+          '*',
+          db.raw(
+            'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+          ),
+        ]);
 
-        return {
-          ...newEvent,
-          event_location: {
-            lat: newEvent.latitude,
-            lng: newEvent.longitude
-          }
-        };
-      },
-      updateEvent: async ({ id, event_location, ...rest }: UpdateEventArgs) => {
-        const [updatedEvent] = await db('events')
-          .where('id', id)
-          .update({ ...rest,
-            event_location: event_location
-              ? db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [event_location.lng, event_location.lat])
-              : undefined})
-          .returning(['*', db.raw('ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude')]);
-        return {
-          ...updatedEvent,
-          event_location: {
-            lat: updatedEvent.latitude,
-            lng: updatedEvent.longitude
-          }
-        };
-      },
+      return {
+        ...newEvent,
+        event_location: {
+          lat: newEvent.latitude,
+          lng: newEvent.longitude,
+        },
+      };
+    },
+    updateEvent: async ({ id, event_location, ...rest }: UpdateEventArgs) => {
+      const [updatedEvent] = await db('events')
+        .where('id', id)
+        .update({
+          ...rest,
+          event_location: event_location
+            ? db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
+                event_location.lng,
+                event_location.lat,
+              ])
+            : undefined,
+        })
+        .returning([
+          '*',
+          db.raw(
+            'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+          ),
+        ]);
+      return {
+        ...updatedEvent,
+        event_location: {
+          lat: updatedEvent.latitude,
+          lng: updatedEvent.longitude,
+        },
+      };
+    },
   },
 };

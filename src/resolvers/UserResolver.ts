@@ -1,17 +1,17 @@
 import db from '../db/connect';
 
 interface UserArgs {
-    id: string;
-  }
+  id: string;
+}
 
 interface CreateUserArgs {
-    username: string;
-    email: string;
+  username: string;
+  email: string;
 }
 interface UpdateUserArgs extends Partial<CreateUserArgs> {
-    id: string;
-  }
-  
+  id: string;
+}
+
 export const UserResolver = {
   Query: {
     user: async ({ id }: UserArgs) => {
