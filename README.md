@@ -6,7 +6,7 @@ This is a personal project aimed at learning and exploring various technologies 
 
 - **Node.js**
 - **TypeScript**
-- **Express.js**
+- **Apollo Server**
 - **GraphQL**
 - **Knex.js**
 - **PostgreSQL**
