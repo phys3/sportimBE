@@ -1,4 +1,4 @@
-import db from '../db/connect';
+import db from '../db/connect.js';
 
 interface UserArgs {
   id: string;
