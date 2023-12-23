@@ -8,4 +8,7 @@ export const UserMutation = `
         username: String,
         email: String
     ): User!
+    exchangeToken(
+        code: String!
+    ): AuthPayload!
 `;
