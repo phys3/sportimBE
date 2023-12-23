@@ -11,4 +11,4 @@ export const UserMutation = `
     exchangeToken(
         code: String!
     ): AuthPayload!
-`;
+`

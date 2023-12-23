@@ -1,11 +1,11 @@
-import { buildSchema } from 'graphql';
-import { UserType, EventType, AttendeeType } from './types/index.js';
-import { UserQuery, EventQuery, AttendeeQuery } from './queries/index.js';
+import { buildSchema } from 'graphql'
+import { UserType, EventType, AttendeeType } from './types/index.js'
+import { UserQuery, EventQuery, AttendeeQuery } from './queries/index.js'
 import {
-  UserMutation,
-  EventMutation,
-  AttendeeMutation,
-} from './mutations/index.js';
+	UserMutation,
+	EventMutation,
+	AttendeeMutation,
+} from './mutations/index.js'
 
 export default buildSchema(`
     ${UserType}
@@ -23,4 +23,4 @@ export default buildSchema(`
         ${EventMutation}
         ${AttendeeMutation}
     }
-`);
+`)

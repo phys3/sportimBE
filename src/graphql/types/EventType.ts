@@ -18,4 +18,4 @@ export const EventType = `
         date_created: String!
         date_updated: String!
     }
-`;
+`

@@ -17,4 +17,4 @@ export const EventMutation = `
         date_time: String, 
         host_user_uid: ID!
     ): Event!
-`;
+`

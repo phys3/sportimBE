@@ -12,4 +12,4 @@ export const UserType = `
         user: User!
         firstTimeLogin: Boolean!
       }
-`;
+`

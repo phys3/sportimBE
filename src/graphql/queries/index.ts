@@ -1,3 +1,3 @@
-export * from './UserQuery.js';
-export * from './EventQuery.js';
-export * from './AttendeeQuery.js';
+export * from './UserQuery.js'
+export * from './EventQuery.js'
+export * from './AttendeeQuery.js'

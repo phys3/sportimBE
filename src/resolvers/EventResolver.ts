@@ -1,4 +1,4 @@
-import db from '../db/connect.js';
+import db from '../db/connect.js'
 
 interface EventArgs {
   id: string;
@@ -17,81 +17,81 @@ interface UpdateEventArgs extends Partial<CreateEventArgs> {
 }
 
 export const EventResolver = {
-  Query: {
-    event: async (_parent: any, { id }: EventArgs) => {
-      const [event] = await db('events').where('id', id).select('*');
-      return event;
-    },
-    events: async () => {
-      const events = await db('events').select(
-        '*',
-        db.raw(
-          'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
-        ),
-      );
-      return events.map(event => ({
-        ...event,
-        event_location: {
-          lat: event.latitude,
-          lng: event.longitude,
-        },
-      }));
-    },
-  },
-  Mutation: {
-    createEvent: async (_parent: any, args: CreateEventArgs) => {
-      const { event_location, ...rest } = args;
-      const [newEvent] = await db('events')
-        .insert({
-          ...rest,
-          event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
-            event_location.lng,
-            event_location.lat,
-          ]),
-        })
-        .returning([
-          '*',
-          db.raw(
-            'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
-          ),
-        ]);
+	Query: {
+		event: async (_parent: unknown, { id }: EventArgs) => {
+			const [event] = await db('events').where('id', id).select('*')
+			return event
+		},
+		events: async () => {
+			const events = await db('events').select(
+				'*',
+				db.raw(
+					'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+				),
+			)
+			return events.map(event => ({
+				...event,
+				event_location: {
+					lat: event.latitude,
+					lng: event.longitude,
+				},
+			}))
+		},
+	},
+	Mutation: {
+		createEvent: async (_parent: unknown, args: CreateEventArgs) => {
+			const { event_location, ...rest } = args
+			const [newEvent] = await db('events')
+				.insert({
+					...rest,
+					event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
+						event_location.lng,
+						event_location.lat,
+					]),
+				})
+				.returning([
+					'*',
+					db.raw(
+						'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+					),
+				])
 
-      return {
-        ...newEvent,
-        event_location: {
-          lat: newEvent.latitude,
-          lng: newEvent.longitude,
-        },
-      };
-    },
-    updateEvent: async (
-      _parent: any,
-      { id, event_location, ...rest }: UpdateEventArgs,
-    ) => {
-      const [updatedEvent] = await db('events')
-        .where('id', id)
-        .update({
-          ...rest,
-          event_location: event_location
-            ? db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
-                event_location.lng,
-                event_location.lat,
-              ])
-            : undefined,
-        })
-        .returning([
-          '*',
-          db.raw(
-            'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
-          ),
-        ]);
-      return {
-        ...updatedEvent,
-        event_location: {
-          lat: updatedEvent.latitude,
-          lng: updatedEvent.longitude,
-        },
-      };
-    },
-  },
-};
+			return {
+				...newEvent,
+				event_location: {
+					lat: newEvent.latitude,
+					lng: newEvent.longitude,
+				},
+			}
+		},
+		updateEvent: async (
+			_parent: unknown,
+			{ id, event_location, ...rest }: UpdateEventArgs,
+		) => {
+			const [updatedEvent] = await db('events')
+				.where('id', id)
+				.update({
+					...rest,
+					event_location: event_location
+						? db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
+							event_location.lng,
+							event_location.lat,
+						])
+						: undefined,
+				})
+				.returning([
+					'*',
+					db.raw(
+						'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+					),
+				])
+			return {
+				...updatedEvent,
+				event_location: {
+					lat: updatedEvent.latitude,
+					lng: updatedEvent.longitude,
+				},
+			}
+		},
+	},
+}

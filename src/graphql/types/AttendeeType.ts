@@ -7,4 +7,4 @@ export const AttendeeType = `
         date_created: String!
         date_updated: String!
     }
-`;
+`
