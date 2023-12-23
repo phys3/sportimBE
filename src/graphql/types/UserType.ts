@@ -10,5 +10,6 @@ export const UserType = `
     type AuthPayload {
         accessToken: String!
         user: User!
+        firstTimeLogin: Boolean!
       }
 `;

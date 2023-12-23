@@ -52,35 +52,33 @@ export const UserResolver = {
     },
     exchangeToken: async (_parent: any, { code }: { code: string }) => {
       try {
-        console.log(code)
-      const tokens = await client.getToken(code).catch((err) => {
-        console.log(err, err.message)
-        });
-      // const idToken = tokens.id_token;
-  console.log(tokens);
-      // if (!idToken) {
-      //   throw new Error('Unable to get an ID token');
-      // }
+      const {tokens} = await client.getToken(code)
+      const idToken = tokens.id_token;
+      console.log('tokens',tokens);
+      if (!idToken) {
+        throw new Error('Unable to get an ID token');
+      }
   
-      // const ticket = await client.verifyIdToken({
-      //   idToken,
-      //   audience: process.env.OAUTH_CLIENT_ID,
-      // });
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.OAUTH_CLIENT_ID,
+      });
+      console.log('ticket', ticket);
+      const { sub: googleId, email } = ticket.getPayload();
+      console.log('googleId', googleId, email);
+      let [user] = await db('users').where('google_id', googleId);
+      let firstTimeLogin = false;
+      if (!user) {
+        firstTimeLogin = true;
+        [user] = await db('users').insert({ username: email.split('@')[0], google_id: googleId, email }).returning('*');
+      }
   
-      // const { sub: googleId, email } = ticket.getPayload();
-  
-      // let [user] = await db('users').where('google_id', googleId);
-  
-      // if (!user) {
-      //   [user] = await db('users').insert({ google_id: googleId, email }).returning('*');
-      // }
-  
-      // return {
-      //   accessToken: tokens.access_token,
-      //   user,
-      // };
+      return {
+        accessToken: tokens.access_token,
+        user,
+        firstTimeLogin,
+      };
     } catch (error) {
-      console.log(code)
       console.error(error);
       throw new Error('Unable to exchange token');
     }
