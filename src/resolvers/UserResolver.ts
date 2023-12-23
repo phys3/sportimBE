@@ -1,10 +1,7 @@
 import { access } from 'fs';
 import db from '../db/connect.js';
 import { OAuth2Client } from 'google-auth-library';
-console.log('OAUTTUUTTUTUTU',
-process.env.OAUTH_CLIENT_ID,
-process.env.OAUTH_CLIENT_SECRET,
-process.env.OAUTH_REDIRECT_URI)
+
 const client = new OAuth2Client(
   process.env.OAUTH_CLIENT_ID,
   process.env.OAUTH_CLIENT_SECRET,
@@ -54,7 +51,6 @@ export const UserResolver = {
       try {
       const {tokens} = await client.getToken(code)
       const idToken = tokens.id_token;
-      console.log('tokens',tokens);
       if (!idToken) {
         throw new Error('Unable to get an ID token');
       }
@@ -63,9 +59,7 @@ export const UserResolver = {
         idToken,
         audience: process.env.OAUTH_CLIENT_ID,
       });
-      console.log('ticket', ticket);
       const { sub: googleId, email } = ticket.getPayload();
-      console.log('googleId', googleId, email);
       let [user] = await db('users').where('google_id', googleId);
       let firstTimeLogin = false;
       if (!user) {
