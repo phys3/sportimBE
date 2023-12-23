@@ -5,6 +5,7 @@ CREATE TABLE users (
   id        UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
   username  VARCHAR(50) NOT NULL,
   email     VARCHAR(50) NOT NULL,
+  google_id VARCHAR(255),
   date_created TIMESTAMP DEFAULT NOW(),
   date_updated TIMESTAMP DEFAULT NOW()
 );

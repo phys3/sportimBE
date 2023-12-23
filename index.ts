@@ -21,6 +21,7 @@ const root = {
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers: root,
+  status400ForVariableCoercionErrors: true,
 });
 
 const { url } = await startStandaloneServer(server, {
