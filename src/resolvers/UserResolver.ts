@@ -58,10 +58,16 @@ export const UserResolver = {
 					idToken,
 					audience: process.env.OAUTH_CLIENT_ID,
 				})
-				const { sub: googleId, email } = ticket.getPayload()
+				const payload = ticket.getPayload()
+
+				if (!payload) {
+					throw new Error('No payload returned')
+				}
+
+				const { sub: googleId, email } = payload
 				let [user] = await db('users').where('google_id', googleId)
 				let firstTimeLogin = false
-				if (!user) {
+				if (!user && email) {
 					firstTimeLogin = true;
 					[user] = await db('users').insert({ username: email.split('@')[0], google_id: googleId, email }).returning('*')
 				}
