@@ -1,11 +1,11 @@
 export const EventType = `
     input EventLocationInput {
-        lat: Float!
-        lng: Float!
+        latitude: Float!
+        longitude: Float!
     }
     type EventLocationOutput {
-        lat: Float!
-        lng: Float!
+        latitude: Float!
+        longitude: Float!
     }
     type Event {
         id: ID!

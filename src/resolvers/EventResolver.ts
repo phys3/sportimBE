@@ -7,7 +7,7 @@ interface CreateEventArgs {
   event_type: number;
   age_group: string;
   skill_level: number;
-  event_location: { lat: number; lng: number };
+  event_location: { latitude: number; longitude: number };
   date_time: string;
   host_user_uid: string;
 }
@@ -32,36 +32,41 @@ export const EventResolver = {
 			return events.map(event => ({
 				...event,
 				event_location: {
-					lat: event.latitude,
-					lng: event.longitude,
+					latitude: event.latitude,
+					longitude: event.longitude,
 				},
 			}))
 		},
 	},
 	Mutation: {
 		createEvent: async (_parent: unknown, args: CreateEventArgs) => {
-			const { event_location, ...rest } = args
-			const [newEvent] = await db('events')
-				.insert({
-					...rest,
-					event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
-						event_location.lng,
-						event_location.lat,
-					]),
-				})
-				.returning([
-					'*',
-					db.raw(
-						'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
-					),
-				])
+			try {
+				const { event_location, ...rest } = args
+				const [newEvent] = await db('events')
+					.insert({
+						...rest,
+						event_location: db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
+							event_location.longitude,
+							event_location.latitude,
+						]),
+					})
+					.returning([
+						'*',
+						db.raw(
+							'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+						),
+					])
 
-			return {
-				...newEvent,
-				event_location: {
-					lat: newEvent.latitude,
-					lng: newEvent.longitude,
-				},
+				return {
+					...newEvent,
+					event_location: {
+						latitude: newEvent.latitude,
+						longitude: newEvent.longitude,
+					},
+				}
+			} catch (e) {
+				console.log('Error creating event', e)
+				return JSON.stringify(e)
 			}
 		},
 		updateEvent: async (
@@ -74,8 +79,8 @@ export const EventResolver = {
 					...rest,
 					event_location: event_location
 						? db.raw('ST_SetSRID(ST_MakePoint(?, ?), 4326)', [
-							event_location.lng,
-							event_location.lat,
+							event_location.longitude,
+							event_location.latitude,
 						])
 						: undefined,
 				})
@@ -88,8 +93,8 @@ export const EventResolver = {
 			return {
 				...updatedEvent,
 				event_location: {
-					lat: updatedEvent.latitude,
-					lng: updatedEvent.longitude,
+					latitude: updatedEvent.latitude,
+					longitude: updatedEvent.longitude,
 				},
 			}
 		},
