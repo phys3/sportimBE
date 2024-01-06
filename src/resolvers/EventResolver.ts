@@ -15,7 +15,10 @@ interface CreateEventArgs {
 interface UpdateEventArgs extends Partial<CreateEventArgs> {
   id: string;
 }
-
+interface ProximityArgs {
+	latitude: number;
+	longitude: number;
+  }
 export const EventResolver = {
 	Query: {
 		event: async (_parent: unknown, { id }: EventArgs) => {
@@ -29,6 +32,29 @@ export const EventResolver = {
 					'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
 				),
 			)
+			return events.map(event => ({
+				...event,
+				event_location: {
+					latitude: event.latitude,
+					longitude: event.longitude,
+				},
+			}))
+		},
+		getEventsByProximity: async (_parent: unknown, { latitude, longitude }: ProximityArgs) => {
+			const events = await db('events')
+				.select(
+					'*',
+					db.raw(
+						'ST_Y(event_location::geometry) as latitude, ST_X(event_location::geometry) as longitude',
+					),
+					db.raw(
+						'ST_Distance(event_location, ST_SetSRID(ST_MakePoint(?, ?), 4326)) as distance',
+						[longitude, latitude],
+					),
+				)
+				.orderBy('distance', 'asc')
+				.limit(10)
+		
 			return events.map(event => ({
 				...event,
 				event_location: {
