@@ -6,6 +6,7 @@ import { UserResolver } from './src/resolvers/UserResolver.js'
 import { EventResolver } from './src/resolvers/EventResolver.js'
 import { AttendeeResolver } from './src/resolvers/AttendeeResolver.js'
 import schema from './src/graphql/index.js'
+
 const root = {
 	Query: {
 		...UserResolver.Query,
